@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  lint:
+    name: Format, lint, types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -e . ruff mypy pytest
+      - run: ruff format --check .
+      - run: ruff check .
+      - run: mypy
+
+  tests:
+    name: Tests and coverage (full golden sweep)
+    runs-on: ubuntu-latest
+    env:
+      DIFF_COVER_MIN: "90" # share of the lines a pull request adds or changes that tests must execute
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # diff-cover compares against the base branch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -e . pytest coverage diff-cover
+      # Always the full sweep: it pins every preset's output, and takes about a minute.
+      - name: Run the tests under coverage
+        run: coverage run -m pytest -m "slow or not slow" --junitxml=junit.xml
+      - name: Test results in the job summary
+        if: always()
+        run: python .github/scripts/junit_summary.py junit.xml >> "$GITHUB_STEP_SUMMARY"
+      - name: Coverage reports
+        if: always()
+        run: |
+          coverage xml
+          coverage html
+          {
+            echo "## Coverage"
+            echo
+            coverage report --format=markdown || true
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Whole-library coverage floor (fail_under in pyproject.toml)
+        run: coverage report --skip-covered --show-missing
+      - name: New code must be covered (lines changed by the pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          set +e
+          diff-cover coverage.xml --compare-branch="origin/${{ github.base_ref }}" \
+            --fail-under="$DIFF_COVER_MIN" --format markdown:diff-cover.md
+          status=$?
+          {
+            echo "## Coverage of the lines this pull request changes"
+            echo
+            cat diff-cover.md
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - name: Keep the reports (HTML coverage, XML, JUnit)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-and-coverage-reports
+          path: |
+            htmlcov/
+            coverage.xml
+            junit.xml
+            diff-cover.md
+          if-no-files-found: ignore
+
+  docs:
+    name: Preset docs are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -e .
+      - run: regen4x-docs
+      - name: Fail if regenerating changed or added anything under docs/ (images compared by pixels)
+        run: python .github/scripts/docs_check.py docs
+
+  okf:
+    name: Documentation (OKF) is complete
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the stale-entry warning compares against the base branch
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Every file is described in its directory's OKF.md
+        run: python .github/scripts/okf_check.py
+      - name: Warn when a changed file's OKF.md was not touched
+        if: github.event_name == 'pull_request'
+        run: python .github/scripts/okf_check.py --base "origin/${{ github.base_ref }}"

@@ -1,0 +1,255 @@
+# Named settings for the upscaler (see regen4x.params.RegenParams for what every option does) and the profiles that say
+# which preset is used for which texture. How names and version numbers work: docs/versioning.md.
+#
+# A preset is a table [preset."FAMILY-vMAJOR.MINOR"] (the quotes are needed because of the dot):
+#   extends     = "OTHER"            start from another preset (default: the RegenParams defaults)
+#   reset       = ["opt", ...]       put these options back to their default (undo something a parent switched on)
+#   description = "..."              shown by `regen4x-upscale --describe NAME` and on the preset's documentation page
+#   status      = "stable"           base | stable | experimental | superseded (see docs/versioning.md)
+#   changelog   = "..."              one line: what this version changes compared with the one before it
+#   <option>    = value              any RegenParams option, written as in params.py
+# Published presets are frozen: a change that alters the output is a new version, never an edit. Presets are frozen
+# once loaded, too, so "frozen copies for rollback" are not needed: pick the older preset by name.
+#
+# A profile is a table [profile.NAME-rN] with an ordered list of rules; the first rule that matches a texture wins:
+#   rules   = [ { path = "*/textures/block/*", transparent = true, preset = "X", keep_opaque = true }, ... ]
+#       path         glob on "/<namespace>/textures/<kind>/<name>.png" ("*" also matches "/")
+#       transparent  true / false: the texture has / has no fully see-through pixel
+#       preset       the preset to upscale with (required)
+#       keep_opaque  after upscaling, restore every source-opaque pixel that became see-through (layered block
+#                    textures: base + glowing cutout overlay on the same face)
+#   extends = "OTHER"                the rules of another profile are appended after this profile's own rules
+#   alias   = "OTHER"                this name is another name for profile OTHER (a pointer such as `standard`)
+# The last rule of a profile must have no condition (it catches everything else).
+#
+# Where a preset is asked for (--blocks, --items, --use), the bare family names `solid` and `cutout` mean "the preset the
+# chosen profile uses for solid / see-through textures".
+#
+# Your own file can add presets and profiles (`regen4x-upscale --presets my.toml`); names must not repeat.
+
+# base = the preset the others build on: flat colour areas, rounded corners, fine grain.
+#        It does not try to draw diagonals; the presets built on it do.
+[preset."base-v1.0"]
+status = "base"
+changelog = "First version: flat colour areas with rounded corners and fine grain."
+description = """
+The baseline the other presets build on: flat colour areas upscaled with consistent rounded corners, fine grain
+added. It does not try to draw diagonals, so staircase edges stay staircases.
+"""
+thr = 0.07
+grain = 0.3
+shape_round = 1.4
+mean_mode = true
+mean_k = 1.0
+merge_size = 0
+smooth = 2.2
+grain_rules = true
+rules_items_only = true
+keep_sharp = true
+sharp_contrast = 0.6
+sharp_flat = 0.04
+keep_dither = true
+
+# items-diag = building block for items only: smoother diagonals on item staircases.
+#              Not used on its own by any profile; cutout-v1.0 and later build on it.
+[preset."items-diag-v1.0"]
+status = "base"
+changelog = "First version: smoother diagonals on item staircases."
+description = """
+base-v1.0 plus smoother diagonals on item staircases. Not used on its own by any profile; cutout-v1.0 builds on it.
+"""
+extends = "base-v1.0"
+diag_items = true
+diag_sigma = 2.0
+
+# lines = the experimental "line drawing" config for blocks with 1px diagonal lines (herringbone patterns,
+#         X-shaped seams). Experimental, with known gaps.
+[preset."lines-v1.0"]
+status = "experimental"
+changelog = "First version: line drawing for 1px diagonal lines on blocks."
+description = """
+base-v1.0 plus the experimental line drawing for blocks with 1px diagonal lines (herringbone patterns, X-shaped seams).
+Experimental; known gap: it can melt busy patterns into blobs.
+"""
+extends = "base-v1.0"
+diag_join = true
+dither_min = 3
+line_field = true
+line_strength = 0.6
+line_aa_merge = true
+aa_max = 2
+line_contrast = 0.05
+line_neighbours_diag = true
+neighbour_max = 12
+
+# The cut-out preset (items, leaves, plants) after a review of 20 cut-out textures:
+#   diag_join + join_thin_only: join same-colour corner-touching pixels (thin diagonal lines), but a thick area may not
+#       jump a thin line
+#   alpha_split: opaque and semi-transparent pixels never share an area (a ring around an eye-like shape)
+#   line_field: thin diagonal lines are drawn as continuous bands instead of dots
+#   keep_gaps: 1px see-through diagonal gaps between different areas stay open (thin prongs)
+#   keep_dither off: checkerboard rule was pasting diagonal stripes back as 4x4 squares
+[preset."cutout-v1.0"]
+status = "superseded"
+changelog = "First cut-out preset: thin diagonal lines as bands, alpha split, open diagonal gaps, checkerboard rule off."
+description = """
+For cut-outs (items, leaves, plants): items-diag-v1.0 plus thin diagonal lines joined and drawn as continuous bands,
+opaque and semi-transparent pixels never share an area, 1px see-through diagonal gaps stay open, checkerboard rule off.
+"""
+extends = "items-diag-v1.0"
+diag_join = true
+join_thin_only = true
+alpha_split = true
+keep_dither = false
+line_field = true
+line_strength = 0.6
+line_contrast = 0.05
+keep_gaps = true
+
+# Block preset: thin diagonal lines joined and drawn as bands, local staircase smoothing, bands clipped at line
+# ends, weaker soft band (0.3) so seam junctions stay sharp. 0 check_links failures on the 10 blocks it was tuned on.
+[preset."solid-v1.0"]
+status = "superseded"
+changelog = "First solid preset: lines as bands, local staircase smoothing, clipped bands, weak soft band."
+description = """
+Solid-block preset: thin diagonal lines joined and drawn as bands, local staircase smoothing,
+bands clipped at line ends, weak soft band (0.3) so seam junctions stay sharp.
+"""
+extends = "base-v1.0"
+diag_join = true
+join_thin_only = true
+keep_dither = false
+line_field = true
+line_strength = 0.3
+line_contrast = 0.05
+stair_local = true
+line_clip = true
+
+# solid-v1.0 without widening the staircase window (keeps straight edges next to staircases square, e.g. a lamp's
+# inner square). 0 check_links failures on the 10 blocks it was tuned on.
+[preset."solid-v1.1"]
+status = "superseded"
+changelog = "Staircase window is not widened, so straight edges next to staircases stay square."
+description = """
+solid-v1.0 without widening the staircase window, so straight edges next to staircases stay square (e.g. a lamp's inner square).
+"""
+extends = "solid-v1.0"
+stair_grow = false
+
+# Like v1.1, but bands only for real lines (chain >= 5 px or contrast >= 0.18), so faint short corner pairs on
+# organic blocks don't get drawn as dark dashes.
+[preset."solid-v1.2"]
+status = "superseded"
+changelog = "Bands only for real lines (chain of 5+ px or contrast 0.18+)."
+description = """
+solid-v1.1 with bands only for real lines (chain of 5+ px or contrast 0.18+), so faint short corner pairs on organic blocks
+are not drawn as dark dashes.
+"""
+extends = "solid-v1.1"
+line_min_len = 5
+line_strong = 0.18
+
+# Short seam pieces touching a long line are drawn too (closes gaps in double herringbone).
+[preset."solid-v1.3"]
+status = "superseded"
+changelog = "Short seam pieces touching a long line are drawn too."
+description = """
+solid-v1.2 that also draws short seam pieces touching a long line (closes gaps in double herringbone).
+"""
+extends = "solid-v1.2"
+line_attach = true
+
+# Line length counted through crossings (the arms of an X), and line ends extended into a feature they run into.
+[preset."solid-v1.4"]
+status = "superseded"
+changelog = "Line length counted through crossings; line ends reach into a feature they run into."
+description = """
+solid-v1.3 that counts line length through crossings (the arms of an X) and extends line ends into a feature they run into.
+"""
+extends = "solid-v1.3"
+line_thru = true
+line_reach = true
+
+# Short pairs kept only for their contrast must be a thin 1px line on both pixels. Fixes arch outlines; costs
+# some smoothing on figure outlines.
+[preset."solid-v1.5"]
+status = "superseded"
+changelog = "Short pairs kept only for their contrast must be a thin 1px line (fixes arch outlines)."
+description = """
+solid-v1.4 where short pairs kept only for their contrast must be a thin 1px line on both pixels (fixes arch outlines;
+costs some smoothing on figure outlines).
+"""
+extends = "solid-v1.4"
+strong_thin = true
+
+# Lone 2px lines need contrast >= 0.26 (removes stray strokes on textures without real lines), and shapes are
+# decided between colour groups first (a background split into many shade areas no longer loses its edges to one
+# big area, so no white bumps on signs). The solid preset the standard profile uses.
+[preset."solid-v1.6"]
+status = "stable"
+changelog = "Lone 2px lines need contrast 0.26+; shapes are decided between colour groups first (no bumps on signs)."
+description = """
+solid-v1.5 where lone 2px lines need contrast 0.26+ (no stray strokes on textures without real lines) and shapes are decided
+between colour groups first (no white bumps on signs). The solid preset the standard profile uses.
+"""
+extends = "solid-v1.5"
+single_con = 0.26
+shape_groups = 0.2
+
+# cutout-v1.0 + the block fixes (thinner soft band, band clipping, local staircase smoothing, real-lines-only rules,
+# reach into same-colour features, colour groups that never change opacity).
+[preset."cutout-v2.0"]
+status = "superseded"
+changelog = "Takes over the solid fixes up to solid-v1.6 (thinner soft band, band clipping, real-lines-only rules, ...)."
+description = """
+cutout-v1.0 plus the solid fixes (thinner soft band, band clipping, local staircase smoothing,
+real-lines-only rules, reach into same-colour features, colour groups that never change opacity).
+"""
+extends = "cutout-v1.0"
+line_strength = 0.3
+line_clip = true
+stair_local = true
+stair_grow = false
+line_min_len = 5
+line_strong = 0.18
+line_attach = true
+line_thru = true
+line_reach = true
+strong_thin = true
+single_con = 0.26
+shape_groups = 0.2
+
+# cutout-v2.0 + short (3px) lines inside the item count as real lines.
+[preset."cutout-v2.1"]
+status = "stable"
+changelog = "Short (3px) lines inside the item count as real lines."
+description = """
+cutout-v2.0 where short (3px) lines inside the item count as real lines. The cutout preset the standard profile uses.
+"""
+extends = "cutout-v2.0"
+inner_min_len = 3
+
+# What to batch-upscale. Chosen per texture: anything with see-through pixels -> cutout-v2.1, solid blocks ->
+# solid-v1.6 (the legacy-cutout-v1-r1 profile uses cutout-v1.0 for see-through textures instead).
+# Block-folder textures with see-through pixels also get keep_opaque: smoothing may cut corners off thin opaque parts,
+# which leaves real holes where the overlay is also clear.
+# `standard` always names the newest release; scripts that must keep their output use `standard-r1` and so on.
+[profile.standard-r1]
+description = "see-through textures -> cutout-v2.1, solid blocks -> solid-v1.6 (the shipping setup)"
+rules = [
+    { path = "*/textures/block/*", transparent = true, preset = "cutout-v2.1", keep_opaque = true },
+    { transparent = true, preset = "cutout-v2.1" },
+    { preset = "solid-v1.6" },
+]
+
+[profile.standard]
+description = "the newest standard release (now standard-r1)"
+alias = "standard-r1"
+
+[profile.legacy-cutout-v1-r1]
+description = "like standard-r1, but see-through textures use the older cutout-v1.0"
+rules = [
+    { path = "*/textures/block/*", transparent = true, preset = "cutout-v1.0", keep_opaque = true },
+    { transparent = true, preset = "cutout-v1.0" },
+]
+extends = "standard-r1"
