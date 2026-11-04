@@ -101,13 +101,8 @@ jobs:
           cache-dependency-path: requirements.txt
       - run: pip install -e .
       - run: regen4x-docs
-      - name: Fail if regenerating changed or added anything under docs/
-        run: |
-          git add --intent-to-add docs
-          if ! git diff --exit-code --stat -- docs; then
-            echo "::error::docs/presets is out of date. Run regen4x-docs and commit the result."
-            exit 1
-          fi
+      - name: Fail if regenerating changed or added anything under docs/ (images compared by pixels)
+        run: python .github/scripts/docs_check.py docs
 
   okf:
     name: Documentation (OKF) is complete

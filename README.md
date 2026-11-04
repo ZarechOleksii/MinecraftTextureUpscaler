@@ -181,5 +181,8 @@ The code is released under the [Apache License 2.0](LICENSE); commercial use is 
 `pack.mcmeta` (an existing pack's `pack.mcmeta` is left as it is); please leave it there. The sample textures in `samples/free/` and the images generated
 from them in `docs/presets/img/` are CC BY-SA 3.0 (see [samples/free/NOTICE.md](samples/free/NOTICE.md)).
 
+regen4x is an unofficial fan tool. It is not affiliated with, endorsed by or sponsored by Mojang Studios or Microsoft;
+Minecraft is a trademark of Mojang Studios.
+
 The tool upscales textures you supply. Upscaled textures are adaptations of the originals, so only redistribute a
 resource pack built from a mod if that mod's license allows it.

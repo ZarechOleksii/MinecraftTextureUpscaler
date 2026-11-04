@@ -38,7 +38,8 @@ To check without rewriting files: `ruff format --check . && ruff check . && mypy
 `.github/workflows/ci.yml` runs these on every pull request (and on pushes to master): format, lint and types; the OKF
 documentation check (it also warns on a pull request when a changed file's `OKF.md` was not touched); the full
 golden sweep under coverage (`fail_under` in `pyproject.toml`, and 90% of the lines a pull request changes must be
-covered, checked by diff-cover); and `regen4x-docs` followed by a check that nothing under `docs/` changed. The job
+covered, checked by diff-cover); and `regen4x-docs` followed by `.github/scripts/docs_check.py`, which fails when
+anything under `docs/` changed (PNGs by pixels: their bytes differ between Windows and Linux). The job
 summary shows the test results and coverage, and the HTML report is an artifact. Keep it in step with this list.
 
 If you touched anything under `src/regen4x/` other than `tools/`, run the full golden sweep as well (about two minutes):

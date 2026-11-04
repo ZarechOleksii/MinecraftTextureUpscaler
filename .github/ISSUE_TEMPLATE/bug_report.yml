@@ -1,0 +1,30 @@
+name: Bug report
+description: Something produces wrong output, crashes or behaves unexpectedly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: The command you ran
+      description: Include the preset or profile and any options.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Operating system, Python version and the output of `python -m pip list`.
+    validations:
+      required: true
+  - type: textarea
+    id: texture
+    attributes:
+      label: Example texture
+      description: Attach the 16px original only if you may share it.

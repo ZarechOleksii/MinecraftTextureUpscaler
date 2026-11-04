@@ -27,5 +27,9 @@ directory you are working in, and update it when a file's contents or role chang
 - [requirements.txt](requirements.txt): runtime dependencies (numpy, scipy, pillow), read by `pyproject.toml`.
 - [LICENSE](LICENSE): Apache License 2.0 of the code.
 - [NOTICE](NOTICE): copyright and the credit request (link to the repository) that redistributions must keep.
+- [CONTRIBUTING.md](CONTRIBUTING.md): how to report a bug and make a change; points at the full rules in
+  [.claude/CLAUDE.md](.claude/CLAUDE.md).
+- [SECURITY.md](SECURITY.md): how to report a vulnerability privately and what is in scope.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): expected behaviour and how it is enforced.
 - [.editorconfig](.editorconfig), [.gitattributes](.gitattributes): CRLF line endings in the working tree, LF in git.
 - [.gitignore](.gitignore): caches, packs, logs and other generated files that must not be committed.
