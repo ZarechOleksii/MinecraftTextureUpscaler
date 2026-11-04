@@ -20,7 +20,7 @@ jobs:
     name: Format, lint, types
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -37,7 +37,7 @@ jobs:
     env:
       DIFF_COVER_MIN: "90" # share of the lines a pull request adds or changes that tests must execute
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # diff-cover compares against the base branch
       - uses: actions/setup-python@v5
@@ -93,7 +93,7 @@ jobs:
     name: Preset docs are up to date
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -108,7 +108,7 @@ jobs:
     name: Documentation (OKF) is complete
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # the stale-entry warning compares against the base branch
       - uses: actions/setup-python@v5
