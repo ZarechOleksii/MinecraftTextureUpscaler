@@ -1,0 +1,124 @@
+title = "free samples (Minetest Game)"
+note = """
+The sample textures are from [Minetest Game](https://github.com/luanti-org/minetest_game) (the `default` mod, textures by the Minetest Game contributors), licensed CC BY-SA 3.0, see [LICENSE-minetest_game.txt](../../samples/free/LICENSE-minetest_game.txt). The images in this folder are adaptations of them (upscaled versions) and are shared under the same license, CC BY-SA 3.0.
+"""
+
+[[sample]]
+file = "brick.png"
+kind = "block"
+geometry = "straight brick lines, staggered rows"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "cobble.png"
+kind = "block"
+geometry = "round cobble blobs"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "bookshelf.png"
+kind = "block"
+geometry = "tiny coloured details in rows"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "tree.png"
+kind = "block"
+geometry = "vertical organic bark"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "gravel.png"
+kind = "block"
+geometry = "noise and pebbles"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "ice.png"
+kind = "block"
+geometry = "diagonal 1px highlight lines"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "furnace_front.png"
+kind = "block"
+geometry = "arch and rectangle openings in stone"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "glass.png"
+kind = "block"
+geometry = "thin frame with a few small details"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "mese_block.png"
+kind = "block"
+geometry = "symmetric patterns on a bright flat colour"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "meselamp.png"
+kind = "block"
+geometry = "bevelled square frame, soft gradient"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "tool_steelpick.png"
+kind = "item"
+geometry = "diagonal handle, curved head"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "tool_steelsword.png"
+kind = "item"
+geometry = "thin diagonal blade"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "apple.png"
+kind = "item"
+geometry = "round, smooth highlight"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "diamond.png"
+kind = "item"
+geometry = "angular facets"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "book.png"
+kind = "item"
+geometry = "flat rectangle in perspective"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "coal_lump.png"
+kind = "item"
+geometry = "blobby, low contrast"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "ladder_steel.png"
+kind = "item"
+geometry = "straight rails and rungs"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "sign_wood.png"
+kind = "item"
+geometry = "straight edges and a text pattern"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "blueberries.png"
+kind = "item"
+geometry = "small round dots in a triangle"
+credit = "Minetest Game contributors, CC BY-SA 3.0"
+
+[[sample]]
+file = "stick.png"
+kind = "item"
+geometry = "thin 1px diagonal line"
+credit = "Minetest Game contributors, CC BY-SA 3.0"

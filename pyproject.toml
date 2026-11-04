@@ -1,0 +1,103 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "regen4x"
+version = "0.2.0"
+description = "Edge-aware 16px to 64px upscaler for modded Minecraft textures, plus resource-pack build and check tools"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Oleksii Zarechanskyi" }]
+requires-python = ">=3.12"
+dynamic = ["dependencies"]
+
+[project.scripts]
+regen4x-upscale = "regen4x.tools.upscale:main"
+regen4x-wizard = "regen4x.tools.wizard:main"
+regen4x-docs = "regen4x.tools.make_docs:main"
+regen4x-run-pack = "regen4x.tools.run_pack:main"
+regen4x-upscale-folder = "regen4x.tools.upscale_folder:main"
+regen4x-make-variant = "regen4x.tools.make_variant:main"
+regen4x-hole-check = "regen4x.tools.hole_check:main"
+regen4x-ct-check = "regen4x.tools.ct_check:main"
+regen4x-check-links = "regen4x.tools.check_links:main"
+regen4x-selftest = "regen4x.tools.selftest:main"
+
+[dependency-groups]
+dev = ["ruff", "mypy", "pytest", "coverage", "diff-cover"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+regen4x = ["*.toml"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.format]
+line-ending = "cr-lf"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "N",       # pep8-naming
+    "UP",      # pyupgrade
+    "B",       # bugbear
+    "C4",      # comprehensions
+    "SIM",     # simplify
+    "PTH",     # use pathlib
+    "RET",     # return statements
+    "RUF",
+    "PERF",
+    "S324",    # insecure hash without usedforsecurity=False
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The upscaler uses the maths names H/W (output size) next to h/w (source size).
+"src/regen4x/upscaler.py" = ["N806"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "tests"]
+mypy_path = "src"
+check_untyped_defs = true
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra -m 'not slow'"
+markers = [
+    "integration: runs the command line on a jar built from samples/free (or on REGEN_TEST_JAR); results go to build/integration/",
+    "slow: the full golden sweep (about a minute); run with: pytest -m \"slow or not slow\"",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src/regen4x"]
+
+[tool.coverage.report]
+# the whole-library floor; new code is held to a higher bar by diff-cover in CI (see .github/workflows/ci.yml)
+fail_under = 95
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if __name__ == .__main__.:",
+]
