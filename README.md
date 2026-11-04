@@ -1,7 +1,7 @@
 # regen4x
 
-Edge-aware 16px → 64px upscaler for modded Minecraft block and item textures, plus tools to build and check resource
-packs.
+Edge-aware upscaler for modded Minecraft block and item textures: 16px originals become crisp higher-resolution ones
+(4x by default, 2x to 8x with `--scale`), plus tools to build and check resource packs.
 
 Requires Python 3.12+. Install it (this also puts the `regen4x-*` commands on your path):
 
@@ -83,9 +83,9 @@ regen4x-docs        # rebuilds docs/presets from samples/free
 
 ## Build a pack from a mods folder
 ```
-regen4x-run-pack <instance>/mods <instance>/resourcepacks/MyPack_64x.zip mymod- othermod ...   # same code as regen4x-upscale
-regen4x-hole-check <instance>/mods/<mod>.jar <instance>/resourcepacks/MyPack_64x.zip   # must print 0
-regen4x-ct-check <instance>/resourcepacks/MyPack_64x.zip <instance>/mods mymod- othermod ...  # 0 flagged
+regen4x-run-pack <instance>/mods <instance>/resourcepacks/MyPack.zip mymod- othermod ...   # same code as regen4x-upscale
+regen4x-hole-check <instance>/mods/<mod>.jar <instance>/resourcepacks/MyPack.zip   # must print 0
+regen4x-ct-check <instance>/resourcepacks/MyPack.zip <instance>/mods mymod- othermod ...  # 0 flagged
 ```
 (`python -m regen4x.tools.run_pack ...` works too, for every tool.)
 
@@ -118,7 +118,7 @@ at [OKF.md](OKF.md). The format is described in [docs/open-knowledge-format.md](
 | `regen4x-wizard` | asks the questions, prints and runs the `regen4x-upscale` command |
 | `regen4x-docs` | builds the preset documentation (pages and before / after sheets) from sample textures |
 | `regen4x-run-pack` | builds a resource pack from a folder of mod jars |
-| `regen4x-ct-check` | seam check of every connected sheet in a pack (3×3 wall, original vs 64px); `--sheet out.png a,b,c` renders a comparison |
+| `regen4x-ct-check` | seam check of every connected sheet in a pack (3×3 wall, original vs upscaled); `--sheet out.png a,b,c` renders a comparison |
 | `regen4x-hole-check` | checks layered block models for see-through holes |
 | `regen4x-check-links` | checks that diagonal 1px links stay connected |
 | `regen4x-make-variant` | diagnostic packs (original textures / items only / blocks only) |

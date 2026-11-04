@@ -1,6 +1,6 @@
 # Project instructions
 
-regen4x: edge-aware 16px -> 64px upscaler for modded Minecraft textures, plus resource-pack build/check tools.
+regen4x: edge-aware upscaler for 16px modded Minecraft textures (2x to 8x, default 4x), plus resource-pack build/check tools.
 See `README.md` for usage. Everything is configured in `pyproject.toml`.
 
 ## Layout and documentation (OKF)
