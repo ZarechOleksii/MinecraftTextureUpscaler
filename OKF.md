@@ -6,7 +6,7 @@ purpose: Entry point to the repository documentation: what regen4x is and where 
 
 # regen4x
 
-An edge-aware 16px to 64px upscaler for modded Minecraft textures, plus tools to build and check resource packs.
+An edge-aware upscaler that turns 16px modded Minecraft textures into crisp higher-resolution ones, plus tools to build and check resource packs.
 Every directory has an `OKF.md` like this one (format and rules: [docs/open-knowledge-format.md](docs/open-knowledge-format.md)); read the one for the
 directory you are working in, and update it when a file's contents or role change.
 

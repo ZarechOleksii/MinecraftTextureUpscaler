@@ -1,10 +1,10 @@
-"""Check connected-texture sheets in a pack: seam step at tile joins of a 3x3 wall, original vs 64px.
+"""Check connected-texture sheets in a pack: seam step at tile joins of a 3x3 wall, original vs upscaled.
 
 usage: regen4x-ct-check <pack_zip> <mods_dir> <jar_prefix>... [--scale N] [--sheet out.png name1,name2,...]
 
 A wall is built from sheet tiles chosen by which sides are open (as in a 3x3 wall of the same block).
 Seam step = mean colour jump across tile joins; inner = jump one pixel inside. Flags sheets whose
-64px seam step is clearly larger than the original's (new > 1.2 * old + 2).
+upscaled seam step is clearly larger than the original's (new > 1.2 * old + 2).
 """
 
 import argparse
@@ -74,7 +74,7 @@ def seams(wall_pixels: NDArray[np.uint8], ts: int, n: int = 3) -> float:
 
 
 def render_comparison(rows: list[SheetRow], out_path: Path) -> None:
-    """One row per sheet: single block and 3x3 wall, original vs 64px."""
+    """One row per sheet: single block and 3x3 wall, original vs upscaled."""
     grey = (60, 60, 60, 255)
     canvas = Image.new("RGBA", (4 * 394 + 10, len(rows) * 414 + 10), grey)
     draw = ImageDraw.Draw(canvas)

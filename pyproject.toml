@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "regen4x"
 version = "0.2.0"
-description = "Edge-aware 16px to 64px upscaler for modded Minecraft textures, plus resource-pack build and check tools"
+description = "Edge-aware upscaler for 16px modded Minecraft textures (2x to 8x), plus resource-pack build and check tools"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
